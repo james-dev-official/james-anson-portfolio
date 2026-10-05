@@ -6,7 +6,10 @@ import {
   ShoppingBag, UtensilsCrossed, Scale, Building2, HeartPulse, Cpu,
   Wrench, Plane, Palette, Camera, Flower2, Landmark,
   Music, Sofa, Car, Trophy, Sprout, GraduationCap, ArrowUpRight, Layers, Layout, MousePointerClick, Monitor, Code2, Sparkles, Frame,
+  Workflow, Cloud, Container, GitBranch, BrainCircuit, Database, Zap, PenTool, LayoutTemplate,
 } from "lucide-react";
+import { caseStudies, type CaseStudy } from "@/src/data/case-studies";
+import { showcaseProjects } from "@/src/data/showcase-projects";
 
 // Image URLs
 const logo = "/assets/james-anson-logo.jpg";
@@ -121,6 +124,8 @@ body.ja-body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sa
 .ja-root .ic-wf{background:rgba(67,83,255,0.15);color:#8891ff}
 .ja-root .ic-woo{background:rgba(139,92,246,0.15);color:#a78bfa}
 .ja-root .ic-fig{background:linear-gradient(135deg,rgba(245,132,31,0.18),rgba(236,64,122,0.18));color:#ff9966}
+.ja-root .ic-ai{background:rgba(245,132,31,0.15);color:#f5841f}
+.ja-root .ic-cloud{background:rgba(245,166,35,0.15);color:#f5a623}
 
 .ja-root .section{padding:6rem 5%;max-width:1320px;margin:0 auto}
 .ja-root .section-inner{max-width:1200px;margin:0 auto}
@@ -184,6 +189,9 @@ body.ja-body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sa
 .ja-root .rcell-body{position:relative;z-index:2;margin-top:auto}
 .ja-root .rcell-cat{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.18em;margin-bottom:14px;display:block}
 .ja-root .rcell-title{font-family:'Clash Display',sans-serif;font-size:1.85rem;font-weight:600;color:#fff;letter-spacing:-0.02em;line-height:1.05;margin-bottom:18px;transition:transform .45s cubic-bezier(.2,.8,.2,1),color .35s ease;word-break:break-word}
+.ja-root .rcell-desc{font-size:0.85rem;color:var(--muted2);line-height:1.65;margin-bottom:16px}
+.ja-root .rcell-stack{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.ja-root .rcell-stack span{font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted2);padding:4px 8px;border:1px solid var(--border2);border-radius:4px}
 .ja-root .rcell-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:14px;border-top:1px dashed rgba(255,255,255,0.06)}
 .ja-root .rcell-domain{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 .ja-root .rcell-arrow{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transform:translate(-4px,4px);transition:all .35s cubic-bezier(.2,.8,.2,1)}
@@ -231,6 +239,8 @@ body.ja-body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sa
 .ja-root .ptag-wix{background:rgba(27,107,192,0.22);color:#a4c8ee;border-color:rgba(27,107,192,0.35)}
 .ja-root .ptag-wf{background:rgba(67,83,255,0.22);color:#b8bdff;border-color:rgba(67,83,255,0.35)}
 .ja-root .ptag-woo{background:rgba(139,92,246,0.22);color:#cebcfb;border-color:rgba(139,92,246,0.35)}
+.ja-root .ptag-ai{background:rgba(245,132,31,0.22);color:#ffc08a;border-color:rgba(245,132,31,0.4)}
+.ja-root .ptag-ux{background:linear-gradient(135deg,rgba(245,132,31,0.22),rgba(236,64,122,0.22));color:#ffb3a0;border-color:rgba(236,64,122,0.4)}
 .ja-root .pcat{display:none}
 .ja-root .port-body{padding:1.4rem 0.25rem 0;display:flex;flex-direction:column;gap:0.4rem}
 .ja-root .port-meta{font-family:'JetBrains Mono',monospace;font-size:0.66rem;color:var(--accent);font-weight:600;letter-spacing:0.18em;text-transform:uppercase}
@@ -351,7 +361,7 @@ const DRIBBBLE = "https://dribbble.com/jamesansondigital";
 const BEHANCE = "https://www.behance.net/jamesansondigital";
 const LINKEDIN = "https://bd.linkedin.com/in/jamesansonofficial";
 
-type Plat = "wp" | "sf" | "wix" | "wf" | "woo";
+type Plat = "wp" | "sf" | "wix" | "wf" | "woo" | "ai" | "ux";
 type Project = {
   href: string;
   p: Plat;
@@ -362,6 +372,20 @@ type Project = {
   bg: string;
   image?: string;
   recent?: boolean;
+};
+
+// Shape used by the "Selected Projects" grid. Web projects (Project) and AI/UX showcase entries both fit it.
+// href and image are optional so AI/UX cards can exist before a demo link or thumbnail is ready.
+type GridProject = {
+  id?: string;
+  href?: string;
+  p: Plat;
+  emoji: string;
+  cat: string;
+  title: string;
+  niche: string;
+  bg: string;
+  image?: string;
 };
 
 const projects: Project[] = [
@@ -848,6 +872,23 @@ const niches: Array<[React.ComponentType<{ className?: string }>, string, string
   [GraduationCap, "Education", "Courses, tutoring & academies"],
 ];
 
+const arsenal: Array<[React.ComponentType<{ className?: string }>, string, string]> = [
+  [Cloud, "AWS", "Cloud infrastructure & hosting"],
+  [Container, "Docker", "Containerised services & deployments"],
+  [GitBranch, "CI/CD", "GitHub to Netlify automated pipelines"],
+  [Workflow, "n8n", "Workflow automation & webhooks"],
+  [BrainCircuit, "RAG & LLMs", "Claude, OpenAI, Gemini & LLaMA apps"],
+  [Database, "Supabase", "Postgres & vector store"],
+  [Zap, "Groq", "Fast LLM inference APIs"],
+  [PenTool, "Figma", "Auto-layout, variants & prototypes"],
+  [Code2, "WordPress", "Elementor & custom PHP"],
+  [Layers, "WooCommerce", "Stores & multi-vendor builds"],
+  [ShoppingBag, "Shopify", "Liquid themes & storefronts"],
+  [Layout, "Webflow", "CMS & interaction design"],
+  [Monitor, "Wix", "Business & creative sites"],
+  [LayoutTemplate, "Squarespace", "Portfolio & service sites"],
+];
+
 const ArrowSvg = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
     <path d="M7 17L17 7M17 7H7M17 7v10" />
@@ -860,7 +901,7 @@ function ProjectCard({
   ptagClass,
   platLabel,
 }: {
-  pr: Project;
+  pr: GridProject;
   hidden: boolean;
   ptagClass: string;
   platLabel: string;
@@ -881,7 +922,19 @@ function ProjectCard({
     [],
   );
 
- const src = pr.image ?? (services[serviceIdx](pr.href) + (attempt ? (services[serviceIdx](pr.href).includes("?") ? "&_r=" + attempt : "?_r=" + attempt) : ""));
+  // AI / UX cards never use auto-screenshots (a Figma or n8n link would give a useless image).
+  // They show the image you set in src/data/showcase-projects.ts, or the emoji placeholder.
+  const isShowcase = pr.p === "ai" || pr.p === "ux";
+  const canShot = !pr.image && !!pr.href && !isShowcase;
+  const showImg = !!pr.image || canShot;
+  const src = pr.image
+    ? pr.image
+    : canShot
+      ? services[serviceIdx](pr.href as string) +
+        (attempt
+          ? (services[serviceIdx](pr.href as string).includes("?") ? "&_r=" + attempt : "?_r=" + attempt)
+          : "")
+      : "";
 
   const handleLoad = () => {
     if (pr.image) {
@@ -914,13 +967,8 @@ function ProjectCard({
     }
   };
 
-  return (
-    <a
-      href={pr.href}
-      target="_blank"
-      rel="noreferrer"
-      className={`port-card ${hidden ? "hide" : ""}`}
-    >
+  const body = (
+    <>
       <div className="port-thumb">
         <div className="thumb-bg" style={{ background: pr.bg }}>
           <span className="thumb-emoji" aria-hidden>
@@ -928,13 +976,13 @@ function ProjectCard({
           </span>
           <span className="thumb-brand">{pr.title}</span>
         </div>
-        {!errored && (
+        {showImg && !errored && (
           <img
             ref={imgRef}
             key={`${serviceIdx}-${attempt}`}
             className={`port-shot ${loaded ? "loaded" : ""}`}
             src={src}
-            alt={`${pr.title} website screenshot`}
+            alt={`${pr.title} ${isShowcase ? "project preview" : "website screenshot"}`}
             loading="lazy"
             width="1280"
             height="900"
@@ -949,12 +997,29 @@ function ProjectCard({
         <div className="port-title">{pr.title}</div>
         <div className="port-foot">
           <div className="port-niche">{pr.niche}</div>
-          <div className="port-link">
-            Visit Site <ArrowSvg />
-          </div>
+          {pr.href ? (
+            <div className="port-link">
+              {isShowcase ? "View Project" : "Visit Site"} <ArrowSvg />
+            </div>
+          ) : (
+            <div className="port-link" style={{ color: "var(--muted)" }}>
+              Details on request
+            </div>
+          )}
         </div>
       </div>
+    </>
+  );
+
+  const cls = `port-card ${hidden ? "hide" : ""}`;
+  return pr.href ? (
+    <a href={pr.href} target="_blank" rel="noreferrer" className={cls}>
+      {body}
     </a>
+  ) : (
+    <div className={cls} style={{ cursor: "default" }}>
+      {body}
+    </div>
   );
 }
 
@@ -1041,6 +1106,60 @@ const src = pr.image ?? (services[serviceIdx](pr.href) + (attempt ? "&_r=" + att
   );
 }
 
+function CaseStudyCard({ cs, index }: { cs: CaseStudy; index: number }) {
+  let domain = "";
+  if (cs.href) {
+    try {
+      domain = new URL(cs.href).hostname.replace(/^www\./, "");
+    } catch {
+      domain = cs.href;
+    }
+  }
+
+  const inner = (
+    <>
+      <div className="rcell-preview" aria-hidden>
+        <div className="rcell-preview-bg" style={{ background: cs.bg }} />
+        {cs.image && (
+          <img src={cs.image} alt="" loading="lazy" width="1280" height="900" />
+        )}
+      </div>
+      <div className="rcell-top">
+        <span className="rcell-num">/{String(index + 1).padStart(2, "0")}</span>
+        <span className="rcell-status">{cs.status ?? "Case Study"}</span>
+      </div>
+      <div className="rcell-body">
+        <span className="rcell-cat">{cs.cat}</span>
+        <h3 className="rcell-title">{cs.title}</h3>
+        <p className="rcell-desc">{cs.summary}</p>
+        <div className="rcell-stack">
+          {cs.stack.map((t) => (
+            <span key={t}>{t}</span>
+          ))}
+        </div>
+        <div className="rcell-foot">
+          <span className="rcell-domain">
+            {cs.href ? domain : "Architecture walkthrough on request"}
+          </span>
+          {cs.href && (
+            <span className="rcell-arrow">
+              <ArrowSvg />
+            </span>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
+  return cs.href ? (
+    <a href={cs.href} target="_blank" rel="noreferrer" className="recent-cell">
+      {inner}
+    </a>
+  ) : (
+    <div className="recent-cell">{inner}</div>
+  );
+}
+
 function CountUp({
   end,
   suffix = "",
@@ -1091,7 +1210,11 @@ export default function Index() {
   const [scrolled, setScrolled] = useState(false);
 
   const recentProjects = useMemo(() => projects.filter((p) => p.recent), []);
-  const olderProjects = useMemo(() => projects.filter((p) => !p.recent), []);
+  // AI & UI/UX showcase cards come first so they are visible under "All Projects" as well.
+  const olderProjects = useMemo<GridProject[]>(
+    () => [...showcaseProjects, ...projects.filter((p) => !p.recent)],
+    [],
+  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -1102,6 +1225,8 @@ export default function Index() {
 
   const filters: { id: "all" | Plat; label: string }[] = [
     { id: "all", label: "All Projects" },
+    { id: "ai", label: "AI & Automation" },
+    { id: "ux", label: "UI/UX Design (Figma)" },
     { id: "wp", label: "WordPress" },
     { id: "sf", label: "Shopify" },
     { id: "wix", label: "Wix" },
@@ -1116,6 +1241,8 @@ export default function Index() {
     wix: "Wix",
     wf: "Webflow",
     woo: "WooCommerce",
+    ai: "AI & Automation",
+    ux: "UI/UX · Figma",
   };
 
   return (
@@ -1193,7 +1320,7 @@ export default function Index() {
         </div>
       </nav>
 
-      <header className="hero">
+      <header className="hero" id="platforms">
         <div className="hero-bg" />
         <div className="hero-grid-bg" />
         <div className="hero-orb o1" />
@@ -1225,19 +1352,21 @@ export default function Index() {
           <div>
             <div className="hero-available">
               <div className="pulse-dot" />
-              Available for new projects
+              Available for remote roles &amp; new projects
             </div>
             <h1>
               Hi, I'm James
               <br />
-              <span className="line-accent">UI/UX Designer</span>
+              <span className="line-accent">Solutions Lead</span>
               <br />
-              &amp; Web Developer
+              Web, AI &amp; Cloud
             </h1>
             <p className="hero-desc">
-              I design in <strong style={{ color: "#fff" }}>Figma</strong> and build
-              high-converting, visually stunning websites on WordPress, Shopify, Wix, Webflow
-              &amp; WooCommerce — from wireframe to launch, end-to-end.
+              I architect <strong style={{ color: "#fff" }}>AI automations</strong> (n8n, RAG,
+              LLMs), <strong style={{ color: "#fff" }}>cloud-ready web systems</strong> on AWS,
+              and high-converting CMS &amp; e-commerce builds on WordPress, Shopify, Webflow, Wix
+              &amp; Squarespace — all designed in{" "}
+              <strong style={{ color: "#fff" }}>Figma</strong>, from wireframe to launch.
             </p>
             <div className="hero-btns">
               <a href="#portfolio" className="btn-glow">
@@ -1302,6 +1431,18 @@ export default function Index() {
           <div className="hero-right">
             {[
               {
+                ic: "ic-ai",
+                Icon: Workflow,
+                name: "AI Automation",
+                det: "n8n · RAG · Claude / OpenAI · Groq · Supabase",
+              },
+              {
+                ic: "ic-cloud",
+                Icon: Cloud,
+                name: "Cloud & Web Systems",
+                det: "AWS · Docker · CI/CD · GitHub → Netlify",
+              },
+              {
                 ic: "ic-fig",
                 Icon: Palette,
                 name: "UI/UX Design",
@@ -1352,12 +1493,30 @@ export default function Index() {
                   <div className="psc-name">{s.name}</div>
                   <div className="psc-detail">{s.det}</div>
                 </div>
-                <div className="psc-count">{s.count}</div>
+                {s.count && <div className="psc-count">{s.count}</div>}
               </div>
             ))}
           </div>
         </div>
       </header>
+
+      <hr className="divider" />
+
+      <section className="section" id="case-studies">
+        <div className="section-inner">
+          <div className="sec-eyebrow">Case Studies</div>
+          <h2 className="sec-title">Systems, Automation &amp; Design</h2>
+          <p className="sec-sub">
+            Beyond websites — the architecture behind AI workflows, cloud delivery and product
+            design.
+          </p>
+          <div className="recent-grid">
+            {caseStudies.map((cs, i) => (
+              <CaseStudyCard key={cs.id} cs={cs} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
 
       <hr className="divider" />
 
@@ -1440,8 +1599,8 @@ export default function Index() {
           <div className="sec-eyebrow">Live Work</div>
           <h2 className="sec-title">Selected Projects</h2>
           <p className="sec-sub">
-            A curated archive of past websites across WordPress, Shopify, Wix, Webflow, and
-            WooCommerce.
+            A curated archive of AI automations, Figma product designs and websites across
+            WordPress, Shopify, Wix, Webflow, and WooCommerce.
           </p>
 
           <div className="filter-row" style={{ position: "relative", zIndex: 50 }}>
@@ -1466,7 +1625,7 @@ export default function Index() {
               
               return (
                 <ProjectCard
-                  key={pr.href}
+                  key={pr.id ?? pr.href ?? pr.title}
                   pr={pr}
                   hidden={false}
                   ptagClass={ptagClass(pr.p)}
@@ -1474,6 +1633,32 @@ export default function Index() {
                 />
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <hr className="divider" />
+
+      <section className="section" id="arsenal">
+        <div className="section-inner">
+          <div className="sec-eyebrow">Skills &amp; Tools</div>
+          <h2 className="sec-title">Technical Arsenal</h2>
+          <p className="sec-sub">
+            The platforms, cloud tools and AI stack I use to design, build and automate — from
+            Figma prototype to production.
+          </p>
+          <div className="niches-grid">
+            {arsenal.map(([Icon, name, desc], i) => (
+              <div className="niche-chip" key={name}>
+                <span className="niche-num">{String(i + 1).padStart(2, "0")}</span>
+                <div className="niche-icon"><Icon /></div>
+                <div>
+                  <div className="niche-name">{name}</div>
+                  <div className="niche-count">{desc}</div>
+                </div>
+                <ArrowUpRight className="niche-arrow" />
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1568,11 +1753,12 @@ export default function Index() {
             </div>
             <h2 className="ctav2-title">
               Ready to Build Your<br />
-              <span className="accent">Dream Website?</span>
+              <span className="accent">Next Digital System?</span>
             </h2>
             <p className="ctav2-desc">
-              Tell me about your project on WhatsApp or email. I respond within a few hours with a
-              clear plan, timeline, and competitive quote. No obligations.
+              Web systems, AI automations or product design — tell me about your project on
+              WhatsApp or email. I respond within a few hours with a clear plan, timeline, and
+              competitive quote. No obligations.
             </p>
             <div className="ctav2-socials">
               <a className="ctav2-soc" href={DRIBBBLE} target="_blank" rel="noreferrer">Dribbble</a>
@@ -1619,9 +1805,9 @@ export default function Index() {
               <img src={logo} alt="James Anson" className="logo-img" />
             </a>
             <p className="foot-tag">
-              Full Stack Web Developer & UI/UX Designer crafting high-converting websites on
-              WordPress, Shopify, Wix, Webflow & WooCommerce. Trusted by 200+ clients across 15+
-              countries.
+              Solutions Lead at James Anson Digital — Web Systems & Cloud (AWS), AI Automations
+              (n8n, RAG, LLMs), CMS & E-commerce and Product Design (Figma). Trusted by 200+
+              clients across 15+ countries.
             </p>
             <div className="foot-socials">
               <a href={LINKEDIN} target="_blank" rel="noreferrer" aria-label="LinkedIn">
@@ -1645,7 +1831,13 @@ export default function Index() {
                 <a href="#platforms">Services</a>
               </li>
               <li>
+                <a href="#case-studies">Case Studies</a>
+              </li>
+              <li>
                 <a href="#portfolio">Portfolio</a>
+              </li>
+              <li>
+                <a href="#arsenal">Technical Arsenal</a>
               </li>
               <li>
                 <a href="#niches">Niches</a>
@@ -1659,22 +1851,19 @@ export default function Index() {
             </ul>
           </div>
           <div className="foot-col">
-            <h4>Platforms</h4>
+            <h4>Expertise</h4>
             <ul>
               <li>
-                <a href="#platforms">WordPress</a>
+                <a href="#case-studies">AI Automations</a>
               </li>
               <li>
-                <a href="#platforms">Shopify</a>
+                <a href="#case-studies">Web Systems &amp; Cloud</a>
               </li>
               <li>
-                <a href="#platforms">Wix</a>
+                <a href="#portfolio">Product Design (Figma)</a>
               </li>
               <li>
-                <a href="#platforms">Webflow</a>
-              </li>
-              <li>
-                <a href="#platforms">WooCommerce</a>
+                <a href="#platforms">CMS &amp; E-commerce</a>
               </li>
             </ul>
           </div>
